@@ -1,5 +1,6 @@
 import random
 from datetime import date
+from operator import attrgetter
 
 
 class Film:
@@ -31,22 +32,26 @@ class Serial(Film):
         return f"{self.title} (S{self.season:02d}E{self.episode:02d})"
 
 
-def filtration(how=None):
-    if how == None:
-        return list
-    return [item for item in list if item.__class__ == how]
+def sort_and_filtr(after_which, by_what=None, rev=False):
+    if not by_what:
+        return sorted(list, key=attrgetter(after_which), reverse=rev)
+    filtered_list = [item for item in list if item.__class__ == by_what]
+    return sorted(filtered_list, key=attrgetter(after_which), reverse=rev)
 
 
 def get_movies():
-    return sorted(filtration(Film), key=lambda film: film.title)
+    return sort_and_filtr("title", Film)
 
 
 def get_series():
-    return sorted(filtration(Serial), key=lambda serial: serial.title)
+    return sort_and_filtr("title", Serial)
 
 
 def search(wanted):
-    return [item for item in list if item.title == wanted].pop()
+    found = [item for item in list if item.title == wanted]
+    if not found:
+        return f"Brak wyników dla : {wanted}"
+    return found.pop()
 
 
 def generate_views():
@@ -61,9 +66,7 @@ def generate_views_for_10():
 
 
 def top_titles(how_many, content_type=None):
-    by_views = sorted(
-        filtration(content_type), key=lambda item: item.views, reverse=True
-    )
+    by_views = sort_and_filtr("views", content_type, True)
     return by_views[:how_many]
 
 
@@ -124,6 +127,6 @@ if __name__ == "__main__":
 
     generate_views_for_10()
     print(f"Najpopularniejsze filmy i seriale dnia {date.today().strftime('%d.%m.%Y')}")
-    popular = top_titles(3)
+    popular = top_titles(3, Serial)
     for item in popular:
         print(item, item.views)
