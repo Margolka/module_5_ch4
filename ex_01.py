@@ -3,10 +3,10 @@ from datetime import date
 
 
 class Film:
-    def __init__(self, title, year, gengre):
+    def __init__(self, title, year, genre):
         self.title = title
         self.year = year
-        self.gengre = gengre
+        self.genre = genre
         # Variables
         self._views = 0
 
@@ -18,7 +18,7 @@ class Film:
         self._views += step
 
     def __str__(self):
-        return f"{self.title}({self.year})"
+        return f"{self.title} ({self.year})"
 
 
 class Serial(Film):
@@ -31,18 +31,22 @@ class Serial(Film):
         return f"{self.title} (S{self.season:02d}E{self.episode:02d})"
 
 
+def filtration(how=None):
+    if how == None:
+        return list
+    return [item for item in list if item.__class__ == how]
+
+
 def get_movies():
-    film_list = [item for item in list if item.__class__ == Film]
-    return sorted(film_list, key=lambda film: film.title)
+    return sorted(filtration(Film), key=lambda film: film.title)
 
 
 def get_series():
-    serial_list = [item for item in list if item.__class__ == Serial]
-    return sorted(serial_list, key=lambda serial: serial.title)
+    return sorted(filtration(Serial), key=lambda serial: serial.title)
 
 
-def serch(wanted):
-    return [item for item in list if item.title == wanted]
+def search(wanted):
+    return [item for item in list if item.title == wanted].pop()
 
 
 def generate_views():
@@ -56,50 +60,49 @@ def generate_views_for_10():
         generate_views()
 
 
-def top_titles(how_many, content_type):
-    by_views = [item for item in list if item.__class__ == content_type]
-    by_views = sorted(by_views, key=lambda item: item.views, reverse=True)
+def top_titles(how_many, content_type=None):
+    by_views = sorted(
+        filtration(content_type), key=lambda item: item.views, reverse=True
+    )
     return by_views[:how_many]
 
 
 if __name__ == "__main__":
     print("Biblioteka filmów")
-
     # Movies and Serials sample
-    film_01 = Film(title="Zielona mila", year=1999, gengre="Dramat")
-    film_02 = Film(title="Skazani na Shawshank", year=1994, gengre="Dramat")
-    film_03 = Film(title="Forrest Gump", year=1994, gengre="Dramat/Komedia")
-    film_04 = Film(title="Leon zawodowiec", year=1994, gengre="Dramat/Kryminał")
-    film_05 = Film(title="Requiem dla snu", year=2000, gengre="Dramat")
-    film_06 = Film(title="Matrix", year=1999, gengre="Akcja/Sci-fi")
-    film_07 = Film(title="Milczenie owiec", year=1991, gengre="Thriller")
-    film_08 = Film(title="Gladiator", year=2000, gengre="Dramat historyczny")
-
+    film_01 = Film(title="Zielona mila", year=1999, genre="Dramat")
+    film_02 = Film(title="Skazani na Shawshank", year=1994, genre="Dramat")
+    film_03 = Film(title="Forrest Gump", year=1994, genre="Dramat/Komedia")
+    film_04 = Film(title="Leon zawodowiec", year=1994, genre="Dramat/Kryminał")
+    film_05 = Film(title="Requiem dla snu", year=2000, genre="Dramat")
+    film_06 = Film(title="Matrix", year=1999, genre="Akcja/Sci-fi")
+    film_07 = Film(title="Milczenie owiec", year=1991, genre="Thriller")
+    film_08 = Film(title="Gladiator", year=2000, genre="Dramat historyczny")
     serial_01 = Serial(
         title="Gra o tron",
         year=2011,
-        gengre="Dramat/Fantasy/Przygodowy",
+        genre="Dramat/Fantasy/Przygodowy",
         season=1,
         episode=10,
     )
     serial_02 = Serial(
-        title="Dr House", year=2005, gengre="Dramat/Komedia", season=1, episode=22
+        title="Dr House", year=2005, genre="Dramat/Komedia", season=1, episode=22
     )
     serial_03 = Serial(
-        title="Breaking Bad", year=2008, gengre="Drama/Kryminał", season=1, episode=7
+        title="Breaking Bad", year=2008, genre="Drama/Kryminał", season=1, episode=7
     )
     serial_04 = Serial(
         title="Stranger Things",
         year=2016,
-        gengre="Dramat/Horror/Sci-Fi",
+        genre="Dramat/Horror/Sci-Fi",
         season=1,
         episode=8,
     )
     serial_05 = Serial(
-        title="Przyjaciele", year=1994, gengre="Komedia", season=1, episode=24
+        title="Przyjaciele", year=1994, genre="Komedia", season=1, episode=24
     )
     serial_06 = Serial(
-        title="Sherlock", year=2010, gengre="Dramat/Kryminał", season=1, episode=3
+        title="Sherlock", year=2010, genre="Dramat/Kryminał", season=1, episode=3
     )
 
     list = [
@@ -120,8 +123,7 @@ if __name__ == "__main__":
     ]
 
     generate_views_for_10()
-
     print(f"Najpopularniejsze filmy i seriale dnia {date.today().strftime('%d.%m.%Y')}")
-    popular = top_titles(3, Serial)
+    popular = top_titles(3)
     for item in popular:
         print(item, item.views)
