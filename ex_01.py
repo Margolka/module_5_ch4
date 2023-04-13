@@ -32,41 +32,41 @@ class Serial(Film):
         return f"{self.title} (S{self.season:02d}E{self.episode:02d})"
 
 
-def sort_and_filtr(after_which, by_what=None, rev=False):
+def sort_and_filtr(list, after_which, by_what=None, rev=False):
+    sorted_list = sorted(list, key=attrgetter(after_which), reverse=rev)
     if not by_what:
-        return sorted(list, key=attrgetter(after_which), reverse=rev)
-    filtered_list = [item for item in list if item.__class__ == by_what]
-    return sorted(filtered_list, key=attrgetter(after_which), reverse=rev)
+        return sorted_list
+    return [item for item in sorted_list if item.__class__ == by_what]
 
 
-def get_movies():
-    return sort_and_filtr("title", Film)
+def get_movies(list):
+    return sort_and_filtr(list, "title", Film)
 
 
-def get_series():
-    return sort_and_filtr("title", Serial)
+def get_series(list):
+    return sort_and_filtr(list, "title", Serial)
 
 
-def search(wanted):
+def search(list, wanted):
     found = [item for item in list if item.title == wanted]
     if not found:
         return f"Brak wyników dla : {wanted}"
     return found.pop()
 
 
-def generate_views():
+def generate_views(list):
     drawn = random.choice(list)
     drawn.play(random.randint(1, 100))
     print(drawn, drawn.views)
 
 
-def generate_views_for_10():
+def generate_views_for_10(list):
     for _ in range(10):
-        generate_views()
+        generate_views(list)
 
 
-def top_titles(how_many, content_type=None):
-    by_views = sort_and_filtr("views", content_type, True)
+def top_titles(list, how_many, content_type=None):
+    by_views = sort_and_filtr(list, "views", content_type, True)
     return by_views[:how_many]
 
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         title="Sherlock", year=2010, genre="Dramat/Kryminał", season=1, episode=3
     )
 
-    list = [
+    library = [
         film_01,
         film_02,
         film_03,
@@ -125,8 +125,8 @@ if __name__ == "__main__":
         serial_06,
     ]
 
-    generate_views_for_10()
+    generate_views_for_10(library)
     print(f"Najpopularniejsze filmy i seriale dnia {date.today().strftime('%d.%m.%Y')}")
-    popular = top_titles(3, Serial)
+    popular = top_titles(library, 3, Serial)
     for item in popular:
         print(item, item.views)
