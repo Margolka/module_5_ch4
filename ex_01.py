@@ -33,10 +33,10 @@ class Serial(Film):
 
 
 def sort_and_filtr(list, after_which, by_what=None, rev=False):
-    sorted_list = sorted(list, key=attrgetter(after_which), reverse=rev)
+    list.sort(key=attrgetter(after_which), reverse=rev)
     if not by_what:
-        return sorted_list
-    return [item for item in sorted_list if item.__class__ == by_what]
+        return list
+    return [item for item in list if item.__class__ == by_what]
 
 
 def get_movies(list):
@@ -127,6 +127,6 @@ if __name__ == "__main__":
 
     generate_views_for_10(library)
     print(f"Najpopularniejsze filmy i seriale dnia {date.today().strftime('%d.%m.%Y')}")
-    popular = top_titles(library, 3, Serial)
+    popular = top_titles(library, 3)
     for item in popular:
         print(item, item.views)
